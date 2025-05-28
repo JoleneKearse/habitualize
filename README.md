@@ -1,6 +1,24 @@
-# Welcome to Remix!
+# Habit Tracker!
+
+This is a relatively simple app to practice using **Remix**.
 
 - 📖 [Remix docs](https://remix.run/docs)
+
+## Issues encountered
+
+First, I was happy to discover the command `pnpm dlx create-remix@latest` for the _batteries-included_ configuration comes with **TypeScript** pre-installed. However, it also came with **Tailwind v3** rather than the most up-to-date version.
+
+So I needed to upgrade the package.
+
+```sh
+pnpm dlx @tailwindcss/upgrade
+```
+
+removed the `tailwind.config.ts` file. Then, I just needed to update the `tailwind.css` file with
+
+```css
+@import "tailwindcss";
+```
 
 ## Development
 
