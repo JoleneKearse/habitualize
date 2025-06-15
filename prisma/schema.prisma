@@ -14,7 +14,6 @@ model Habit {
   id          Int      @id @default(autoincrement())
   name        String
   color       String
-  description String?
   createdAt   DateTime @default(now())
 
   logs        HabitLog[]
@@ -25,4 +24,5 @@ model HabitLog {
   habitId   Int
   date      DateTime @default(now())
   habit     Habit    @relation(fields: [habitId], references: [id])
+  description String?
 }
