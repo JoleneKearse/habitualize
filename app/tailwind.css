@@ -1,1 +1,15 @@
 @import "tailwindcss";
+
+@theme {
+  --background-image-dark-gradient: linear-gradient(
+    to right,
+    #dc2626,
+    #ea580c,
+    #eab308,
+    #16a34a,
+    #0284c7,
+    #7c3aed,
+    #c026d3,
+    #e11d48
+  );
+}
