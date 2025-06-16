@@ -1,6 +1,6 @@
 import PrimaryButton from "~/components/PrimaryButton";
 import { db } from "../utils/db.server";
-import { Form, useLoaderData } from "@remix-run/react";
+import { Form, useLoaderData, Link, redirect } from "@remix-run/react";
 import { getTextContrastColor } from "~/utils/utils";
 import { ActionFunctionArgs } from "@remix-run/node";
 
@@ -14,6 +14,8 @@ export const loader = async () => {
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const habitId = formData.get("habitId");
+  console.log("Form Data:", formData);
+  const habitDescription = formData.get("habitDescription");
 
   if (typeof habitId !== "string") {
     return { error: "Invalid input" };
@@ -22,9 +24,16 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   // Here you would typically log the habit completion to a database
   console.log(`Habit completed: ${habitId}`);
 
+  await db.habitLog.create({
+    data: {
+      completedAt: new Date(),
+      description: habitDescription ? habitDescription.toString() : null,
+    },
+  });
+
   // You can also add logic to update the habit's completion status in the database
 
-  return null; // or redirect to another page
+  return redirect("/"); // or redirect to another page
 };
 
 export default function Log() {
@@ -36,11 +45,11 @@ export default function Log() {
         What did you do today?
       </h2>
       <Form
-        id="habit-log"
+        id="habitLog"
         method="post"
-        className="flex justify-center items-center flex-col gap-8 w-full"
+        className="flex justify-center items-center flex-col gap-8 w-full text-gray-800 dark:text-gray-200"
       >
-        <ul className="text-gray-800 dark:text-gray-200 flex justify-center items-center gap-4 flex-wrap">
+        <ul className="flex justify-center items-center gap-4 flex-wrap">
           {habits.map((habit) => (
             <li
               key={habit.id}
@@ -55,13 +64,20 @@ export default function Log() {
               </button>
             </li>
           ))}
-          <button
-            type="button"
+          <Link
+            to="/add"
             className="py-1 px-4 bg-linear-[90deg,#dc2626,#ea580c,#eab308,#16a34a,#0284c7,#7c3aed,#c026d3,#e11d48] text-gray-50 text-2xl rounded-2xl hover:bg-linear-[90deg,#e11d48,#c026d3,#7c3aed,#0284c7,#16a34a,#eab308,#ea580c,#dc2626] duration-800 ease-in-out opacity-80 cursor-pointer"
           >
             Add a new habit
-          </button>
+          </Link>
         </ul>
+        <label htmlFor="habitDescription">Add notes</label>
+        <input
+          type="text"
+          name="habitDescription"
+          id="habitDescription"
+          placeholder="Notes"
+        />
         <PrimaryButton />
       </Form>
     </main>
