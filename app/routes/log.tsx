@@ -1,3 +1,4 @@
+import { useState } from "react";
 import PrimaryButton from "~/components/PrimaryButton";
 import { db } from "../utils/db.server";
 import { Form, useLoaderData, Link, redirect } from "@remix-run/react";
@@ -14,30 +15,26 @@ export const loader = async () => {
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const habitId = formData.get("habitId");
-  console.log("Form Data:", formData);
   const habitDescription = formData.get("habitDescription");
 
   if (typeof habitId !== "string") {
     return { error: "Invalid input" };
   }
 
-  // Here you would typically log the habit completion to a database
-  console.log(`Habit completed: ${habitId}`);
-
   await db.habitLog.create({
     data: {
-      completedAt: new Date(),
+      date: new Date(),
+      habitId: parseInt(habitId, 10),
       description: habitDescription ? habitDescription.toString() : null,
     },
   });
 
-  // You can also add logic to update the habit's completion status in the database
-
-  return redirect("/"); // or redirect to another page
+  return redirect("/day");
 };
 
 export default function Log() {
   const habits = useLoaderData<typeof loader>();
+  const [selectedHabitId, setSelectedHabitId] = useState<number | null>(null);
 
   return (
     <main className="flex flex-col items-center justify-center gap-2 px-2 h-screen -mt-10">
@@ -45,23 +42,29 @@ export default function Log() {
         What did you do today?
       </h2>
       <Form
-        id="habitLog"
+        id="habit-log"
         method="post"
         className="flex justify-center items-center flex-col gap-8 w-full text-gray-800 dark:text-gray-200"
       >
         <ul className="flex justify-center items-center gap-4 flex-wrap">
           {habits.map((habit) => (
-            <li
-              key={habit.id}
-              className="text-2xl font-bold py-1 px-4 rounded-2xl text-center"
-              style={{
-                backgroundColor: habit.color,
-                color: getTextContrastColor(habit.color),
-              }}
-            >
-              <button type="button" className="cursor-pointer">
+            <li key={habit.id}>
+              <label
+                className={`text-2xl font-bold py-1 px-4 rounded-2xl text-center cursor-pointer transition-opacity duration-300 ${selectedHabitId === habit.id ? "opacity-100" : "opacity-70"}`}
+                style={{
+                  backgroundColor: habit.color,
+                  color: getTextContrastColor(habit.color),
+                }}
+              >
+                <input
+                  type="radio"
+                  name="habitId"
+                  value={habit.id}
+                  className="sr-only"
+                  onChange={() => setSelectedHabitId(habit.id)}
+                />
                 {habit.name}
-              </button>
+              </label>
             </li>
           ))}
           <Link
@@ -71,13 +74,16 @@ export default function Log() {
             Add a new habit
           </Link>
         </ul>
+
         <label htmlFor="habitDescription">Add notes</label>
         <input
           type="text"
           name="habitDescription"
           id="habitDescription"
           placeholder="Notes"
+          className="px-4 py-2 border rounded w-full max-w-md"
         />
+
         <PrimaryButton />
       </Form>
     </main>
