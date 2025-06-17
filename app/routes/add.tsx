@@ -22,7 +22,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     },
   });
 
-  return redirect("/");
+  return redirect("/log");
 };
 
 export default function AddHabit() {
