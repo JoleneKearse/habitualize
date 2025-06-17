@@ -4,7 +4,18 @@ import { useLoaderData } from "@remix-run/react";
 import { useState, useRef, useEffect } from "react";
 
 export const loader = async () => {
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+  const endOfDay = new Date();
+  endOfDay.setHours(23, 59, 59, 999);
+
   const habitLog = await db.habitLog.findMany({
+    where: {
+      date: {
+        gte: startOfDay,
+        lte: endOfDay,
+      },
+    },
     orderBy: { date: "desc" },
     include: { habit: true },
   });
