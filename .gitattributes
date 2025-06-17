@@ -1,0 +1,6 @@
+# Tell GitHub Linguist to ignore generated code
+/generated/** linguist-vendored
+/prisma/generated/** linguist-vendored
+
+# Force classify config files as TypeScript if needed
+*.config.js linguist-language=TypeScript
