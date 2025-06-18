@@ -4,3 +4,7 @@
 
 # Force classify config files as TypeScript if needed
 *.config.js linguist-language=TypeScript
+
+*.ts linguist-language=TypeScript
+*.tsx linguist-language=TypeScript
+# Force classify test files as TypeScript if needed
