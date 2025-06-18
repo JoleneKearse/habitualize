@@ -51,7 +51,7 @@ export default function Log() {
             <li key={habit.id}>
               <label
                 className={`text-2xl font-bold py-1 px-4 rounded-2xl text-center cursor-pointer transition-opacity duration-300 ${
-                  selectedHabitId === habit.id ? "opacity-100" : "opacity-60"
+                  selectedHabitId === habit.id ? "opacity-60" : "opacity-100"
                 }`}
                 style={{
                   backgroundColor: habit.color,
