@@ -1,7 +1,9 @@
 import { getTextContrastColor } from "~/utils/utils";
 import { db } from "../utils/db.server";
-import { useLoaderData, Form } from "@remix-run/react";
+import { redirect, useLoaderData } from "@remix-run/react";
 import { useState, useRef, useEffect } from "react";
+import EditHabitLogs from "~/components/EditHabitLogs";
+import { ActionFunctionArgs } from "@remix-run/node";
 
 export const loader = async () => {
   const startOfDay = new Date();
@@ -22,6 +24,36 @@ export const loader = async () => {
   return habitLog;
 };
 
+export async function action({ request }: ActionFunctionArgs) {
+  const formData = await request.formData();
+  const intent = formData.get("intent");
+  const habitLogId = formData.get("habitLogId");
+  const habitDescription = formData.get("habitDescription");
+
+  if (typeof habitLogId !== "string") {
+    return new Response("Invalid habit log ID", { status: 400 });
+  }
+
+  const id = Number(habitLogId);
+
+  if (intent === "edit") {
+    await db.habitLog.update({
+      where: { id },
+      data: {
+        description: habitDescription ? habitDescription.toString() : null,
+      },
+    });
+  }
+
+  if (intent === "delete") {
+    await db.habitLog.delete({
+      where: { id },
+    });
+  }
+
+  return redirect("/day");
+}
+
 export default function Day() {
   const habitLog = useLoaderData<typeof loader>();
 
@@ -29,12 +61,11 @@ export default function Day() {
   const day = today.toLocaleDateString("en-US", { weekday: "long" });
   const date = today.toLocaleDateString("en-US", { day: "numeric" });
   const month = today.toLocaleDateString("en-US", { month: "long" });
-  //   const habitNames = habitLog.map((log) => log.habit.name);
-  //   console.log(habitLog);
 
   const [openId, setOpenId] = useState<number | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const [selectedHabitId, setSelectedHabitId] = useState<number | null>(null);
+
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
@@ -61,6 +92,17 @@ export default function Day() {
     };
   }, []);
 
+  const handleEditClick = () => {
+    setIsEditing((prev) => !prev);
+  };
+
+  useEffect(() => {
+    if (isEditing) {
+      setOpenId(null);
+      setSelectedHabitId(null);
+    }
+  }, [isEditing]);
+
   return (
     <main className="flex flex-col items-center justify-center gap-4 px-2 h-screen -mt-10 text-gray-800 dark:text-gray-200">
       <div className="flex items-baseline gap-2">
@@ -70,9 +112,15 @@ export default function Day() {
         <h3 className="text-4xl">
           {month} {date}
         </h3>
+        <button
+          className="bg-linear-[90deg,#eab308,#16a34a,#0284c7] rounded-full text-2xl p-2 hover:bg-linear-[180deg,#eab308,#16a34a,#0284c7]"
+          onClick={handleEditClick}
+        >
+          Edit
+        </button>
       </div>
       <p>{habitLog.length} tasks completed so far!</p>
-      <Form id="day-log" method="patch">
+      {!isEditing ? (
         <ul className="w-full max-w-md mx-auto flex gap-4 flex-wrap justify-center items-center">
           {habitLog.length === 0 && (
             <p className="text-center text-gray-500 dark:text-gray-400">
@@ -111,7 +159,16 @@ export default function Day() {
             </li>
           ))}
         </ul>
-      </Form>
+      ) : (
+        <EditHabitLogs
+          habitLog={habitLog}
+          setOpenId={setOpenId}
+          selectedHabitId={selectedHabitId}
+          setSelectedHabitId={setSelectedHabitId}
+          openId={openId}
+          modalRef={modalRef}
+        />
+      )}
     </main>
   );
 }
