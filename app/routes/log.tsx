@@ -37,7 +37,7 @@ export default function Log() {
   const [selectedHabitId, setSelectedHabitId] = useState<number | null>(null);
 
   return (
-    <main className="flex flex-col items-center justify-center gap-2 px-2 h-screen -mt-10">
+    <main className="flex flex-col items-center justify-center gap-2 px-2 h-screen -mt-10 outline">
       <h2 className="mb-4 text-3xl font-bold bg-linear-[90deg,#e11d48,#c026d3,#7c3aed,#0284c7,#16a34a,#eab308,#ea580c,#dc2626] text-transparent bg-clip-text opacity-95">
         What did you do today?
       </h2>
