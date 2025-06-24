@@ -119,7 +119,9 @@ export default function Day() {
           Edit
         </button>
       </article>
-      <p>{habitLog.length} tasks completed so far!</p>
+      <p>
+        {habitLog.length} task{habitLog.length > 1 ? "s" : ""} completed so far!
+      </p>
       {!isEditing ? (
         <ul className="w-full max-w-md mx-auto flex gap-4 flex-wrap justify-center items-center">
           {habitLog.length === 0 && (
