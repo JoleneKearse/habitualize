@@ -105,7 +105,7 @@ export default function Day() {
 
   return (
     <main className="flex flex-col items-center justify-center gap-4 px-2 h-screen -mt-10 text-gray-800 dark:text-gray-200">
-      <div className="flex items-baseline gap-2">
+      <article className="flex items-baseline gap-2">
         <h2 className="mb-4 text-4xl font-bold bg-linear-[90deg,#e11d48,#c026d3,#7c3aed,#0284c7,#16a34a,#eab308,#ea580c,#dc2626] text-transparent bg-clip-text opacity-95 h-12">
           {day}
         </h2>
@@ -118,7 +118,7 @@ export default function Day() {
         >
           Edit
         </button>
-      </div>
+      </article>
       <p>{habitLog.length} tasks completed so far!</p>
       {!isEditing ? (
         <ul className="w-full max-w-md mx-auto flex gap-4 flex-wrap justify-center items-center">
