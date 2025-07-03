@@ -1,10 +1,11 @@
-import type { MetaFunction } from "@remix-run/node";
-import { FaHome } from "react-icons/fa";
+import { type MetaFunction } from "@remix-run/node";
 import { MdAddBox } from "react-icons/md";
 import { SiLivejournal } from "react-icons/si";
 import { FaCalendarDay } from "react-icons/fa";
 import { BsCalendarWeekFill } from "react-icons/bs";
 import { FaCalendarDays } from "react-icons/fa6";
+import { useState } from "react";
+import { useNavigate } from "@remix-run/react";
 
 export const meta: MetaFunction = () => {
   return [
@@ -17,6 +18,14 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Index() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogInClick = () => {
+    console.log("clicked");
+    navigate("/login");
+  };
+
   return (
     <div className="flex h-screen items-center justify-center bg-gray-100 dark:bg-gray-900">
       <div className="flex flex-col items-center gap-16">
@@ -42,6 +51,16 @@ export default function Index() {
               <FaCalendarDays /> views.
             </li>
           </ol>
+          {!isLoggedIn && (
+            <div>
+              <button
+                className="px-6 py-2 mt-24 bg-linear-[90deg,#dc2626,#ea580c,#eab308,#16a34a,#0284c7,#7c3aed,#c026d3,#e11d48] text-gray-50 text-4xl font-bold rounded-2xl hover:bg-linear-[90deg,#e11d48,#c026d3,#7c3aed,#0284c7,#16a34a,#eab308,#ea580c,#dc2626] duration-800 ease-in-out cursor-pointer"
+                onClick={handleLogInClick}
+              >
+                Log In
+              </button>
+            </div>
+          )}
         </main>
       </div>
     </div>

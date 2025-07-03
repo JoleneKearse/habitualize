@@ -3,13 +3,23 @@ import PrimaryButton from "~/components/PrimaryButton";
 import { db } from "../utils/db.server";
 import { Form, useLoaderData, Link, redirect } from "@remix-run/react";
 import { getTextContrastColor } from "~/utils/utils";
-import { ActionFunctionArgs } from "@remix-run/node";
+import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import { getSession } from "~/services/session.server";
 
-export const loader = async () => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const session = await getSession(request.headers.get("Cookie"));
+  const userId = session.get("userId");
+
+  if (!userId) {
+    return redirect("/login");
+  }
+
   const habits = await db.habit.findMany({
+    where: { userId },
     orderBy: { createdAt: "desc" },
   });
-  return habits;
+
+  return { habits, userId };
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -33,7 +43,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 
 export default function Log() {
-  const habits = useLoaderData<typeof loader>();
+  const { userId, habits } = useLoaderData<typeof loader>();
+
   const [selectedHabitId, setSelectedHabitId] = useState<number | null>(null);
 
   return (

@@ -1,7 +1,18 @@
 import { Form, redirect } from "@remix-run/react";
-import type { ActionFunctionArgs } from "@remix-run/node";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { db } from "../utils/db.server";
 import PrimaryButton from "~/components/PrimaryButton";
+import { getSession } from "~/services/session.server";
+
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const session = await getSession(request.headers.get("Cookie"));
+  const userId = session.get("userId");
+
+  if (!userId) {
+    return redirect("/login");
+  }
+  return { userId };
+};
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();

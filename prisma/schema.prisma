@@ -10,11 +10,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id        String      @id @default(cuid())
+  email     String?   @unique
+  password  String?
+  name      String?
+  createdAt DateTime @default(now())
+
+  habits    Habit[]
+  logs      HabitLog[]
+}
+
 model Habit {
   id          Int      @id @default(autoincrement())
   name        String
   color       String
   createdAt   DateTime @default(now())
+
+  userId      String?
+  user        User?  @relation(fields: [userId], references: [id])
 
   logs        HabitLog[]
 }
@@ -25,4 +39,7 @@ model HabitLog {
   date      DateTime @default(now())
   habit     Habit    @relation(fields: [habitId], references: [id])
   description String?
+
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
 }

@@ -122,7 +122,7 @@ export default function Month() {
           return (
             <article
               key={i}
-              className="border rounded p-2  flex flex-col gap-1 bg-gray-50 dark:bg-gray-800 min-h-fit relative"
+              className="border rounded p-2  flex flex-col gap-1 bg-gray-50 dark:bg-gray-800 min-h-fit relative bg-local"
             >
               <div className="text-sm font-semibold">{date?.getDate()}</div>
               {logs.map((log) => (
