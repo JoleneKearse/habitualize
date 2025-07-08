@@ -1,10 +1,6 @@
 import { Link } from "@remix-run/react";
 import { FaHome } from "react-icons/fa";
-import { MdAddBox } from "react-icons/md";
-import { SiLivejournal } from "react-icons/si";
-import { FaCalendarDay } from "react-icons/fa";
-import { BsCalendarWeekFill } from "react-icons/bs";
-import { FaCalendarDays } from "react-icons/fa6";
+import { RiDashboard3Fill } from "react-icons/ri";
 
 export default function Footer() {
   return (
@@ -17,28 +13,8 @@ export default function Footer() {
             </Link>
           </li>
           <li>
-            <Link to="/log">
-              <SiLivejournal />
-            </Link>
-          </li>
-          <li>
-            <Link to="/day">
-              <FaCalendarDay />
-            </Link>
-          </li>
-          <li>
-            <Link to="/week">
-              <BsCalendarWeekFill />
-            </Link>
-          </li>
-          <li>
-            <Link to="/month">
-              <FaCalendarDays />
-            </Link>
-          </li>
-          <li>
-            <Link to="/add">
-              <MdAddBox />
+            <Link to="/dashboard">
+              <RiDashboard3Fill />
             </Link>
           </li>
         </ul>

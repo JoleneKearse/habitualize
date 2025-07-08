@@ -25,6 +25,7 @@ export const links: LinksFunction = () => [
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
+
   return (
     <html lang="en">
       <head>
@@ -33,7 +34,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body className="flex flex-col items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
+      <body className="flex flex-col items-center justify-center h-fit bg-gray-100 dark:bg-gray-900">
         <Header />
         {children}
         <Footer />

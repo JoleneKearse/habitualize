@@ -1,54 +1,21 @@
+import { Form, Link } from "@remix-run/react";
 import { useState } from "react";
-import PrimaryButton from "~/components/PrimaryButton";
-import { db } from "../utils/db.server";
-import { Form, useLoaderData, Link, redirect } from "@remix-run/react";
 import { getTextContrastColor } from "~/utils/utils";
-import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { getSession } from "~/services/session.server";
+import PrimaryButton from "~/components/PrimaryButton";
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const session = await getSession(request.headers.get("Cookie"));
-  const userId = session.get("userId");
-
-  if (!userId) {
-    return redirect("/login");
-  }
-
-  const habits = await db.habit.findMany({
-    where: { userId },
-    orderBy: { createdAt: "desc" },
-  });
-
-  return { habits, userId };
+type DashboardLogProps = {
+  habitsList: Array<{
+    id: number;
+    name: string;
+    color: string;
+  }>;
 };
 
-export const action = async ({ request }: ActionFunctionArgs) => {
-  const formData = await request.formData();
-  const habitId = formData.get("habitId");
-  const habitDescription = formData.get("habitDescription");
-
-  if (typeof habitId !== "string") {
-    return { error: "Invalid input" };
-  }
-
-  await db.habitLog.create({
-    data: {
-      date: new Date(),
-      habitId: parseInt(habitId, 10),
-      description: habitDescription ? habitDescription.toString() : null,
-    },
-  });
-
-  return redirect("/day");
-};
-
-export default function Log() {
-  const { userId, habits } = useLoaderData<typeof loader>();
-
+export default function DashboardLog({ habitsList }: DashboardLogProps) {
   const [selectedHabitId, setSelectedHabitId] = useState<number | null>(null);
 
   return (
-    <main className="flex flex-col items-center justify-center gap-2 px-2 h-screen -mt-10">
+    <section className="flex flex-col items-center justify-center gap-2 px-2 h-screen -mt-10">
       <h2 className="mb-4 text-3xl font-bold bg-linear-[90deg,#e11d48,#c026d3,#7c3aed,#0284c7,#16a34a,#eab308,#ea580c,#dc2626] text-transparent bg-clip-text opacity-95">
         What did you do today?
       </h2>
@@ -58,11 +25,11 @@ export default function Log() {
         className="flex justify-center items-center flex-col gap-8 w-full text-gray-800 dark:text-gray-200"
       >
         <ul className="flex justify-center items-center gap-4 flex-wrap">
-          {habits.map((habit) => (
+          {habitsList.map((habit) => (
             <li key={habit.id}>
               <label
                 className={`text-2xl font-bold py-1 px-4 rounded-2xl text-center cursor-pointer transition-opacity duration-300 ${
-                  selectedHabitId === habit.id ? "opacity-60" : "opacity-100"
+                  selectedHabitId === habit.id ? "opacity-100" : "opacity-60"
                 }`}
                 style={{
                   backgroundColor: habit.color,
@@ -99,6 +66,6 @@ export default function Log() {
 
         <PrimaryButton />
       </Form>
-    </main>
+    </section>
   );
 }
