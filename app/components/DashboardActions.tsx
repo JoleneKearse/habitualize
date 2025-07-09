@@ -13,13 +13,18 @@ export default function DashboardActions({
   viewMode,
   setViewMode,
 }: DashboardActionsProps) {
+  console.log("Current viewMode:", viewMode);
+
   return (
     <section>
       <ul className="flex flex-wrap gap-10 w-full">
         <li>
           <button
-            onClick={() => setViewMode("log")}
-            className="flex flex-col items-center gap-2 cursor-pointer hover:text-gray-500 outline"
+            onClick={() => {
+              console.log("Log button clicked");
+              setViewMode("log");
+            }}
+            className="flex flex-col items-center gap-2 cursor-pointer hover:text-gray-500 border rounded p-2"
           >
             <h3>Your Habits</h3>
             <SiLivejournal />
@@ -27,8 +32,11 @@ export default function DashboardActions({
         </li>
         <li>
           <button
-            onClick={() => setViewMode("day")}
-            className="flex flex-col items-center gap-2 cursor-pointer hover:text-gray-500"
+            onClick={() => {
+              console.log("Day button clicked");
+              setViewMode("day");
+            }}
+            className="flex flex-col items-center gap-2 cursor-pointer hover:text-gray-500 border rounded p-2"
           >
             <h3>Today's Tasks</h3>
             <FaCalendarDay />
@@ -37,7 +45,7 @@ export default function DashboardActions({
         <li>
           <button
             onClick={() => setViewMode("week")}
-            className="flex flex-col items-center gap-2 cursor-pointer hover:text-gray-500"
+            className="flex flex-col items-center gap-2 cursor-pointer hover:text-gray-500 border rounded p-2"
           >
             <h3>Weekly Window</h3>
             <BsCalendarWeekFill />
@@ -46,7 +54,7 @@ export default function DashboardActions({
         <li>
           <button
             onClick={() => setViewMode("month")}
-            className="flex flex-col items-center gap-2 cursor-pointer hover:text-gray-500"
+            className="flex flex-col items-center gap-2 cursor-pointer hover:text-gray-500 border rounded p-2"
           >
             <h3>Monthly Monitor</h3>
             <FaCalendarDays />
@@ -55,7 +63,7 @@ export default function DashboardActions({
         <li>
           <button
             onClick={() => setViewMode("add")}
-            className="flex flex-col items-center gap-2 cursor-pointer hover:text-gray-500"
+            className="flex flex-col items-center gap-2 cursor-pointer hover:text-gray-500 rounded p-2"
           >
             <h3>New Habit Hub</h3>
             <MdAddBox />
