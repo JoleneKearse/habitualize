@@ -112,14 +112,14 @@ export default function DashboardDay({ habitLogDay }: DashboardDayProps) {
                 value={log.id}
                 className="sr-only"
               />
-              {log.habit.name}
+              {log.description}
 
               {openId === log.id && log.description && (
                 <div
                   ref={modalRef}
                   className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-20 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-700 p-4 rounded-xl shadow-lg max-w-xs w-[250px]"
                 >
-                  <p className="text-sm">{log.description}</p>
+                  <p className="text-sm">{log.habit.name}</p>
                 </div>
               )}
             </li>
