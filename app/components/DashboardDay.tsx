@@ -112,7 +112,7 @@ export default function DashboardDay({ habitLogDay }: DashboardDayProps) {
                 value={log.id}
                 className="sr-only"
               />
-              {log.description}
+              {log.description || log.habit.name}
 
               {openId === log.id && log.description && (
                 <div
