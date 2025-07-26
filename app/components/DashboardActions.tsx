@@ -25,7 +25,7 @@ export default function DashboardActions({
         }}
       >
         <ul
-          className="flex flex-wrap gap-6 w-full rounded-md bg-gray-100 dark:bg-gray-900 p-4"
+          className="flex flex-wrap justify-center gap-4 w-full rounded-md bg-gray-100 dark:bg-gray-900 p-4"
         >
           <li>
             <button
