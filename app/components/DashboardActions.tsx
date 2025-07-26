@@ -25,14 +25,14 @@ export default function DashboardActions({
         }}
       >
         <ul
-          className="flex flex-wrap gap-10 w-full rounded-md bg-gray-100 dark:bg-gray-900 p-4"
+          className="flex flex-wrap gap-6 w-full rounded-md bg-gray-100 dark:bg-gray-900 p-4"
         >
           <li>
             <button
               onClick={() => setViewMode("log")}
               className="flex flex-col items-center gap-2 cursor-pointer hover:bg-[#ea580c] rounded p-2"
             >
-              <h3>Your Habits</h3>
+              <h3 className="text-center text-white text-lg sm:text-xl max-w-[5rem] sm:max-w-none break-words">Your Habits</h3>
               <SiLivejournal />
             </button>
           </li>
@@ -41,7 +41,7 @@ export default function DashboardActions({
               onClick={() => setViewMode("day")}
               className="flex flex-col items-center gap-2 cursor-pointer hover:bg-[#eab308] hover:text-gray-800 rounded p-2"
             >
-              <h3>Today's Tasks</h3>
+              <h3 className="text-center text-white text-lg sm:text-xl max-w-[5rem] sm:max-w-none break-words">Today's Tasks</h3>
               <FaCalendarDay />
             </button>
           </li>
@@ -50,7 +50,7 @@ export default function DashboardActions({
               onClick={() => setViewMode("week")}
               className="flex flex-col items-center gap-2 cursor-pointer hover:bg-[#16a34a] rounded p-2"
             >
-              <h3>Weekly Window</h3>
+              <h3 className="text-center text-white text-lg sm:text-xl max-w-[5rem] sm:max-w-none break-words">Weekly Window</h3>
               <BsCalendarWeekFill />
             </button>
           </li>
@@ -59,7 +59,7 @@ export default function DashboardActions({
               onClick={() => setViewMode("month")}
               className="flex flex-col items-center gap-2 cursor-pointer hover:bg-[#0284c7] rounded p-2"
             >
-              <h3>Monthly Monitor</h3>
+              <h3 className="text-center text-white text-lg sm:text-xl max-w-[5rem] sm:max-w-none break-words">Monthly Monitor</h3>
               <FaCalendarDays />
             </button>
           </li>
@@ -68,7 +68,7 @@ export default function DashboardActions({
               onClick={() => setViewMode("add")}
               className="flex flex-col items-center gap-2 cursor-pointer hover:bg-[#7c3aed] rounded p-2"
             >
-              <h3>New Habit Hub</h3>
+              <h3 className="text-center text-white text-lg sm:text-xl max-w-[5rem] sm:max-w-none break-words">New Habit Hub</h3>
               <MdAddBox />
             </button>
           </li>
