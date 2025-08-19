@@ -1,13 +1,8 @@
 import { db } from "../utils/db.server";
-import { redirect, useLoaderData } from "@remix-run/react";
-import { useState } from "react";
+import { redirect, useLoaderData, Outlet } from "@remix-run/react";
 import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { getSession } from "~/services/session.server";
 import DashboardActions from "~/components/DashboardActions";
-import DashboardLog from "~/components/DashboardLog";
-import DashboardDay from "~/components/DashboardDay";
-import DashboardWeek from "~/components/DashboardWeek";
-import DashboardMonth from "~/components/DashboardMonth";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const session = await getSession(request.headers.get("Cookie"));
@@ -24,21 +19,21 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   });
 
   // Get daily habits
-  const startOfDay = new Date();
-  startOfDay.setHours(0, 0, 0, 0);
-  const endOfDay = new Date();
-  endOfDay.setHours(23, 59, 59, 999);
+  // const startOfDay = new Date();
+  // startOfDay.setHours(0, 0, 0, 0);
+  // const endOfDay = new Date();
+  // endOfDay.setHours(23, 59, 59, 999);
 
-  const habitLogDay = await db.habitLog.findMany({
-    where: {
-      date: {
-        gte: startOfDay,
-        lte: endOfDay,
-      },
-    },
-    orderBy: { date: "desc" },
-    include: { habit: true },
-  });
+  // const habitLogDay = await db.habitLog.findMany({
+  //   where: {
+  //     date: {
+  //       gte: startOfDay,
+  //       lte: endOfDay,
+  //     },
+  //   },
+  //   orderBy: { date: "desc" },
+  //   include: { habit: true },
+  // });
 
   // Get weekly habits
   const now = new Date();
@@ -81,7 +76,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     include: { habit: true },
   });
 
-  return { userId, habitsList, habitLogDay, habitLogWeek, habitLogMonth };
+  return { userId, habitsList, habitLogWeek, habitLogMonth };
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -105,19 +100,13 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 
 export default function Dashboard() {
-  const { userId, habitsList, habitLogDay, habitLogWeek, habitLogMonth } =
+  const { userId, habitsList, habitLogWeek, habitLogMonth } =
     useLoaderData<typeof loader>();
-  const [viewMode, setViewMode] = useState<
-    "log" | "day" | "week" | "month" | "add"
-  >("log");
 
   return (
     <main className="flex flex-col items-center justify-center gap-2 px-10 h-min text-gray-800 dark:text-gray-100">
-      <DashboardActions viewMode={viewMode} setViewMode={setViewMode} />
-      {viewMode === "log" && <DashboardLog habitsList={habitsList} />}
-      {viewMode === "day" && <DashboardDay habitLogDay={habitLogDay} />}
-      {viewMode === "week" && <DashboardWeek habitLogWeek={habitLogWeek} />}
-      {viewMode === "month" && <DashboardMonth habitLogMonth={habitLogMonth} />}
+      <DashboardActions  />
+      <Outlet />
     </main>
   );
 }

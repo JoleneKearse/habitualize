@@ -1,25 +1,62 @@
-import { useState, useRef, useEffect } from "react";
 import { getTextContrastColor } from "~/utils/utils";
+import { db } from "../utils/db.server";
+import { redirect, useLoaderData } from "@remix-run/react";
+import { useState, useRef, useEffect } from "react";
 import EditHabitLogs from "~/components/EditHabitLogs";
+import { ActionFunctionArgs } from "@remix-run/node";
 
-type DashboardDayProps = {
-  habitLogDay: Array<{
-    id: number;
-    userId: string | null;
-    habitId: number;
-    date: Date;
-    description: string | null;
-    habit: {
-      id: number;
-      name: string;
-      color: string;
-      userId: string | null;
-      createdAt: Date;
-    };
-  }>;
+export const loader = async () => {
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+  const endOfDay = new Date();
+  endOfDay.setHours(23, 59, 59, 999);
+
+  const habitLog = await db.habitLog.findMany({
+    where: {
+      date: {
+        gte: startOfDay,
+        lte: endOfDay,
+      },
+    },
+    orderBy: { date: "desc" },
+    include: { habit: true },
+  });
+  return habitLog;
 };
 
-export default function DashboardDay({ habitLogDay }: DashboardDayProps) {
+export async function action({ request }: ActionFunctionArgs) {
+  const formData = await request.formData();
+  const intent = formData.get("intent");
+  const habitLogId = formData.get("habitLogId");
+  const habitDescription = formData.get("habitDescription");
+
+  if (typeof habitLogId !== "string") {
+    return new Response("Invalid habit log ID", { status: 400 });
+  }
+
+  const id = Number(habitLogId);
+
+  if (intent === "edit") {
+    await db.habitLog.update({
+      where: { id },
+      data: {
+        description: habitDescription ? habitDescription.toString() : null,
+      },
+    });
+  }
+
+  if (intent === "delete") {
+    await db.habitLog.delete({
+      where: { id },
+    });
+  }
+
+  return redirect("/day");
+}
+
+export default function Day() {
+  const habitLogDay = useLoaderData<typeof loader>();
+
   const today = new Date();
   const day = today.toLocaleDateString("en-US", { weekday: "long" });
   const date = today.toLocaleDateString("en-US", { day: "numeric" });
@@ -83,8 +120,7 @@ export default function DashboardDay({ habitLogDay }: DashboardDayProps) {
         </button>
       </article>
       <p>
-        {habitLogDay.length} task{habitLogDay.length > 1 ? "s" : ""} completed
-        so far!
+        {habitLogDay.length} task{habitLogDay.length > 1 ? "s" : ""} completed so far!
       </p>
       {!isEditing ? (
         <ul className="w-full max-w-md mx-auto flex gap-4 flex-wrap justify-center items-center">
@@ -119,7 +155,7 @@ export default function DashboardDay({ habitLogDay }: DashboardDayProps) {
                   ref={modalRef}
                   className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-20 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-700 p-4 rounded-xl shadow-lg max-w-xs w-[250px]"
                 >
-                  <p className="text-sm">{log.habit.name}</p>
+                  <p className="text-sm">{log.description}</p>
                 </div>
               )}
             </li>

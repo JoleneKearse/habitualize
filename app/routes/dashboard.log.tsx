@@ -39,7 +39,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     },
   });
 
-  return redirect("/day");
+  return redirect("/dashboard/day");
 };
 
 export default function Log() {
