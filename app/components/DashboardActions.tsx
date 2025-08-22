@@ -33,7 +33,7 @@ export default function DashboardActions() {
             "linear-gradient(90deg, #dc2626, #ea580c, #eab308, #16a34a, #0284c7, #7c3aed, #c026d3, #e11d48)",
         }}
       >
-        <ul className="flex flex-wrap justify-center gap-4 w-full rounded-md bg-gray-100 dark:bg-gray-900 p-4">
+        <ul className="flex flex-wrap justify-center gap-4 font-md w-full rounded-md bg-gray-100 dark:bg-gray-900 p-4">
           <li>
             <button
               onClick={() => handleHabitsClick()}

@@ -28,7 +28,7 @@ export default function Index() {
   return (
     <div className="flex h-fit items-center justify-center bg-gray-100 dark:bg-gray-900">
       <div className="flex flex-col items-center gap-16">
-        <main className="flex flex-col items-center justify-center gap-4 px-2">
+        <main className="flex flex-col items-center justify-center gap-4 px-2 text-sm">
           <h2 className="mb-4 text-3xl font-bold bg-linear-[90deg,#dc2626,#ea580c,#eab308,#16a34a,#0284c7,#7c3aed,#c026d3,#e11d48] text-transparent bg-clip-text opacity-85">
             How does it work?
           </h2>

@@ -12,52 +12,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     return redirect("/login");
   }
 
-  // Get habits for log
-  const habitsList = await db.habit.findMany({
-    where: { userId },
-    orderBy: { createdAt: "desc" },
-  });
-
-  // Get daily habits
-  // const startOfDay = new Date();
-  // startOfDay.setHours(0, 0, 0, 0);
-  // const endOfDay = new Date();
-  // endOfDay.setHours(23, 59, 59, 999);
-
-  // const habitLogDay = await db.habitLog.findMany({
-  //   where: {
-  //     date: {
-  //       gte: startOfDay,
-  //       lte: endOfDay,
-  //     },
-  //   },
-  //   orderBy: { date: "desc" },
-  //   include: { habit: true },
-  // });
-
-  // Get weekly habits
-  const now = new Date();
-  const dayOfWeek = now.getDay();
-
-  const startOfWeek = now;
-  startOfWeek.setDate(now.getDate() - dayOfWeek);
-  startOfWeek.setHours(0, 0, 0, 0);
-
-  const endOfWeek = new Date(startOfWeek);
-  endOfWeek.setDate(startOfWeek.getDate() + 6);
-  endOfWeek.setHours(23, 59, 59, 999);
-
-  const habitLogWeek = await db.habitLog.findMany({
-    where: {
-      date: {
-        gte: startOfWeek,
-        lte: endOfWeek,
-      },
-    },
-    orderBy: { date: "desc" },
-    include: { habit: true },
-  });
-
   // Get monthly habits
   const today = new Date();
 
@@ -76,7 +30,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     include: { habit: true },
   });
 
-  return { userId, habitsList, habitLogWeek, habitLogMonth };
+  return { userId, habitLogMonth };
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -100,12 +54,12 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 
 export default function Dashboard() {
-  const { userId, habitsList, habitLogWeek, habitLogMonth } =
+  const { userId, habitLogMonth } =
     useLoaderData<typeof loader>();
 
   return (
-    <main className="flex flex-col items-center justify-center gap-2 px-10 h-min text-gray-800 dark:text-gray-100">
-      <DashboardActions  />
+    <main className="flex flex-col items-center text-smjustify-center gap-2 px-10 h-min text-gray-800 dark:text-gray-100">
+      <DashboardActions />
       <Outlet />
     </main>
   );

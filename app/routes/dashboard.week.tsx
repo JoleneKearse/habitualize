@@ -110,7 +110,7 @@ export default function Week() {
                 }}
                 onChange={() => setSelectedHabitId(log.id)}
               >
-                {log.habit.name}
+                {log.description || log.habit.name}
 
                 {openId === log.id && log.description && (
                   <div
