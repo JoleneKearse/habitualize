@@ -2,6 +2,7 @@ import { db } from "../utils/db.server";
 import { redirect, useLoaderData, Outlet } from "@remix-run/react";
 import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { getSession } from "~/services/session.server";
+import { useRef, useEffect } from "react";
 import DashboardActions from "~/components/DashboardActions";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
@@ -54,13 +55,19 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 
 export default function Dashboard() {
-  const { userId, habitLogMonth } =
-    useLoaderData<typeof loader>();
+  const { userId, habitLogMonth } = useLoaderData<typeof loader>();
+  const sectionRef = useRef<HTMLElement>(null);
+
+  function handleScrollToSection() {
+    sectionRef.current?.scrollIntoView({ behavior: "smooth" });
+  }
 
   return (
-    <main className="flex flex-col items-center text-smjustify-center gap-2 px-10 h-min text-gray-800 dark:text-gray-100">
-      <DashboardActions />
-      <Outlet />
+    <main className="flex-1 grow overflow-y-auto text-sm justify-center gap-2 px-10 text-gray-800 dark:text-gray-100">
+      <DashboardActions onActionClick={handleScrollToSection} />
+      <article ref={sectionRef} className="pt-16 lg:pt-22 pb-22">
+        <Outlet />
+      </article>
     </main>
   );
 }

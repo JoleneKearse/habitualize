@@ -104,7 +104,7 @@ export default function Month() {
   }, []);
 
   return (
-    <main className="flex flex-col items-center justify-center gap-4 px-2 text-gray-800 dark:text-gray-200 h-screen w-full pb-10">
+    <section className="flex flex-col items-center justify-center gap-4 px-2 text-gray-800 dark:text-gray-200 w-full pb-10">
       <h2 className="text-3xl font-bold mb-2 bg-linear-[90deg,#e11d48,#c026d3,#7c3aed,#0284c7,#16a34a,#eab308,#ea580c,#dc2626] text-transparent bg-clip-text pt-24">
         {month} {year}
       </h2>
@@ -152,6 +152,6 @@ export default function Month() {
           );
         })}
       </div>
-    </main>
+    </section>
   );
 }

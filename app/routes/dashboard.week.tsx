@@ -91,8 +91,8 @@ export default function Week() {
   }, []);
 
   return (
-    <section className="flex flex-col items-center justify-center gap-4 px-2 text-gray-800 dark:text-gray-200 h-screen w-full pb-10">
-      <article className="grid md:grid-cols-7 w-full gap-2 min-h-fit mt-32 md:mt-0">
+    <section className="flex flex-col items-center justify-center gap-4 px-2 text-gray-800 dark:text-gray-200 w-full pb-10">
+      <article className="grid lg:grid-cols-7 w-full gap-2">
         {dayNames.map((day) => (
           <section
             key={day}
