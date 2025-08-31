@@ -1,156 +1,199 @@
-import { getTextContrastColor } from "~/utils/utils";
-import { db } from "../utils/db.server";
-import { useLoaderData } from "@remix-run/react";
-import { useState, useRef, useEffect } from "react";
+import type { LoaderFunctionArgs } from "@remix-run/node";
+import { Link, useLoaderData, NavLink } from "@remix-run/react";
+import { useEffect, useRef, useState } from "react";
 import type { HabitLog } from "@prisma/client";
+
+import { db } from "~/utils/db.server";
+import { getTextContrastColor } from "~/utils/utils";
+import { getMonthMatrix } from "~/utils/calendar";
+import { toLocalDayKey, fromLocalDayKey } from "~/utils/dateKey";
 
 type HabitLogWithHabit = HabitLog & {
   habit: { name: string; color: string };
 };
 
-export const loader = async () => {
+type LoaderData = {
+  y: number;
+  m: number;
+  weeks: string[][];
+  byDay: Record<string, HabitLogWithHabit[]>;
+};
+
+function toISO(d: Date) {
+  return d.toISOString().slice(0, 10);
+}
+
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const url = new URL(request.url);
   const now = new Date();
+  const y = Number(url.searchParams.get("y")) || now.getFullYear();
+  const m = Number(url.searchParams.get("m")) ?? now.getMonth();
 
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-  const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-  endOfMonth.setHours(23, 59, 59, 999);
+  const { weeks, first, last } = getMonthMatrix(y, m, 0);
 
-  const habitLog = await db.habitLog.findMany({
-    where: {
-      date: {
-        gte: startOfMonth,
-        lte: endOfMonth,
-      },
-    },
+  const logs = await db.habitLog.findMany({
+    where: { date: { gte: first, lte: last } },
     orderBy: { date: "desc" },
     include: { habit: true },
   });
 
-  return habitLog;
+  const byDay: Record<string, HabitLogWithHabit[]> = {};
+  for (const log of logs) {
+    const k = toLocalDayKey(new Date(log.date));
+    (byDay[k] ||= []).push(log as HabitLogWithHabit);
+  }
+
+  const isoWeeks = weeks.map((w) => w.map((d) => toLocalDayKey(d)));
+
+  return {
+    y,
+    m,
+    weeks: isoWeeks,
+    byDay,
+  };
 };
 
-function groupLogsByISODate(logs: HabitLogWithHabit[]) {
-  const grouped: { [date: string]: HabitLogWithHabit[] } = {};
-
-  for (const log of logs) {
-    const iso = new Date(log.date).toISOString().split("T")[0]; // "2025-06-23"
-    if (!grouped[iso]) grouped[iso] = [];
-    grouped[iso].push(log);
-  }
-
-  return grouped;
-}
-
-function getMonthGrid(year: number, monthIndex: number) {
-  const firstDay = new Date(year, monthIndex, 1);
-  const lastDay = new Date(year, monthIndex + 1, 0);
-
-  const startDay = firstDay.getDay();
-  const totalDays = lastDay.getDate();
-
-  const calendarCells: (Date | null)[] = [];
-
-  for (let i = 0; i < startDay; i++) {
-    calendarCells.push(null);
-  }
-
-  for (let day = 1; day <= totalDays; day++) {
-    calendarCells.push(new Date(year, monthIndex, day));
-  }
-
-  while (calendarCells.length < 42) {
-    calendarCells.push(null);
-  }
-
-  return calendarCells;
-}
-
 export default function Month() {
-  const habitLog = useLoaderData<typeof loader>();
-  const logsByDate = groupLogsByISODate(habitLog);
+  const { y, m, weeks, byDay } = useLoaderData<typeof loader>();
 
-  const today = new Date();
-  const month = today.toLocaleDateString("en-US", { month: "long" });
-  const year = today.getFullYear();
+  const monthLabel = new Date(y, m, 1).toLocaleString("en-US", {
+    month: "long",
+    year: "numeric",
+  });
 
-  const grid = getMonthGrid(year, today.getMonth());
+  const prevY = m === 0 ? y - 1 : y;
+  const prevM = (m + 11) % 12;
+  const nextY = m === 11 ? y + 1 : y;
+  const nextM = (m + 1) % 12;
 
   const [openId, setOpenId] = useState<number | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
-  const [selectedHabitId, setSelectedHabitId] = useState<number | null>(null);
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        modalRef.current &&
-        !modalRef.current.contains(event.target as Node)
-      ) {
+    const onDown = (e: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
         setOpenId(null);
       }
     };
-
-    const handleEsc = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setOpenId(null);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("keydown", handleEsc);
+    const onEsc = (e: KeyboardEvent) => e.key === "Escape" && setOpenId(null);
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onEsc);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleEsc);
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onEsc);
     };
   }, []);
 
   return (
-    <section className="flex flex-col items-center justify-center gap-4 px-2 text-gray-800 dark:text-gray-200 w-full pb-10">
-      <h2 className="text-3xl font-bold mb-2 bg-linear-[90deg,#e11d48,#c026d3,#7c3aed,#0284c7,#16a34a,#eab308,#ea580c,#dc2626] text-transparent bg-clip-text pt-24">
-        {month} {year}
-      </h2>
-      <div className="grid grid-cols-7 gap-2 w-full max-w-5xl">
-        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-          <div key={day} className="font-bold text-center pb-10">
-            {day}
-          </div>
-        ))}
+    <section className="w-full pb-10 px-2 text-gray-800 dark:text-gray-200">
+      <header className="flex items-center justify-between max-w-5xl mx-auto pt-24 mb-3">
+        <h2 className="text-3xl font-bold bg-linear-[90deg,#e11d48,#c026d3,#7c3aed,#0284c7,#16a34a,#eab308,#ea580c,#dc2626] text-transparent bg-clip-text">
+          {monthLabel}
+        </h2>
+        <div className="flex gap-2">
+          <Link
+            to={`?y=${prevY}&m=${prevM}`}
+            className="rounded-lg border px-3 py-1 hover:bg-white/5"
+            aria-label="Previous month"
+          >
+            ‹
+          </Link>
+          <Link
+            to={`?y=${nextY}&m=${nextM}`}
+            className="rounded-lg border px-3 py-1 hover:bg-white/5"
+            aria-label="Next month"
+          >
+            ›
+          </Link>
+        </div>
+      </header>
 
-        {grid.map((date, i) => {
-          const iso = date?.toISOString().split("T")[0] ?? "";
-          const logs = logsByDate[iso] || [];
+      <div className="max-w-5xl mx-auto">
+        {/* weekday header */}
+        <div className="grid grid-cols-7 text-center text-sm text-slate-400 mb-2">
+          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
+            <div key={d} className="pb-2 font-semibold">
+              {d}
+            </div>
+          ))}
+        </div>
 
-          return (
-            <article
-              key={i}
-              className="border rounded p-2  flex flex-col gap-1 bg-gray-50 dark:bg-gray-800 min-h-fit relative bg-local"
-            >
-              <div className="text-sm font-semibold">{date?.getDate()}</div>
-              {logs.map((log) => (
+        <div className="grid grid-cols-7 gap-3 auto-rows-fr">
+          {weeks.flat().map((iso, idx) => {
+            const date = fromLocalDayKey(iso);
+            const inMonth = date.getMonth() === m;
+            const isToday = new Date().toDateString() === date.toDateString();
+            const logs = byDay[iso] || [];
+
+            return (
+              <article
+                key={idx}
+                className={[
+                  "relative rounded-xl border p-2 flex flex-col gap-1",
+                  inMonth
+                    ? "border-slate-600 bg-slate-800"
+                    : "border-slate-800 bg-slate-900/40",
+                  isToday ? "ring-2 ring-fuchsia-500" : "",
+                ].join(" ")}
+              >
                 <div
-                  key={log.id}
-                  className="text-xs rounded px-1 py-0.5"
-                  style={{
-                    backgroundColor: log.habit.color,
-                    color: getTextContrastColor(log.habit.color),
-                  }}
-                  onClick={() => setOpenId(log.id)}
-                  onChange={() => setSelectedHabitId(log.id)}
+                  className={[
+                    "text-sm font-semibold text-right",
+                    inMonth ? "text-slate-200" : "text-slate-500",
+                  ].join(" ")}
                 >
-                  {log.habit.name}
+                  {date.getDate()}
+                </div>
 
-                  {openId === log.id && log.description && (
-                    <div
-                      ref={modalRef}
-                      className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-20 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-4 rounded-xl shadow-lg max-w-xs w-[250px]"
+                <div className="mt-1 flex flex-col gap-1">
+                  {logs.slice(0, 4).map((log) => (
+                    <button
+                      key={log.id}
+                      type="button"
+                      className="truncate rounded-md px-2 py-1 text-xs font-medium text-left"
+                      style={{
+                        backgroundColor: log.habit.color,
+                        color: getTextContrastColor(log.habit.color),
+                      }}
+                      onClick={() =>
+                        setOpenId((cur) => (cur === log.id ? null : log.id))
+                      }
                     >
-                      <p className="text-sm">{log.description}</p>
-                    </div>
+                      <span
+                        className="inline-block sm:hidden w-2 h-2 rounded-full"
+                        style={{ backgroundColor: log.habit.color }}
+                      />
+                      <span className="hidden md:inline lg:hidden">
+                        {log.habit.name}
+                      </span>
+                      <span className="hidden lg:inline">
+                        {log.description}
+                      </span>
+
+                      {openId === log.id && log.description && (
+                        <div
+                          ref={modalRef}
+                          className="absolute top-full left-1/2 -translate-x-1/2 z-20 mt-2 w-[260px] max-w-xs rounded-xl border border-slate-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-4 shadow-xl"
+                        >
+                          <p className="text-sm">{log.description}</p>
+                        </div>
+                      )}
+                    </button>
+                  ))}
+
+                  {logs.length > 4 && (
+                    <NavLink
+                      to={`/dashboard/day?date=${iso}`}
+                      className="text-xs text-sky-400"
+                    >
+                      +{logs.length - 4} more
+                    </NavLink>
                   )}
                 </div>
-              ))}
-            </article>
-          );
-        })}
+              </article>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

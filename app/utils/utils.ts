@@ -17,8 +17,4 @@ function getTextContrastColor(hexColor: string): string {
   return luminance > 0.6 ? "#1f2937" : "#f3f4f6";
 };
 
-// function getDescriptionsFromHabitLog(habitLog: { description: string | null }[]): string[], habitName: string {
-//   return habitLog.map((log) => log.description).filter() as string[];
-// };
-
 export { getTextContrastColor };
