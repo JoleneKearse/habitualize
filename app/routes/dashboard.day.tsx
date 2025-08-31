@@ -3,6 +3,7 @@ import { db } from "../utils/db.server";
 import { redirect, useLoaderData } from "@remix-run/react";
 import { useState, useRef, useEffect } from "react";
 import { ActionFunctionArgs } from "@remix-run/node";
+import EditHabitLogs from "~/components/EditHabitLogs";
 
 export const loader = async () => {
   const startOfDay = new Date();
@@ -50,7 +51,7 @@ export async function action({ request }: ActionFunctionArgs) {
     });
   }
 
-  return redirect("/day");
+  return redirect("/dashboard/day");
 }
 
 export default function Day() {
@@ -119,7 +120,8 @@ export default function Day() {
         </button>
       </article>
       <p>
-        {habitLogDay.length} task{habitLogDay.length > 1 ? "s" : ""} completed so far!
+        {habitLogDay.length} task{habitLogDay.length > 1 ? "s" : ""} completed
+        so far!
       </p>
       {!isEditing ? (
         <ul className="w-full max-w-md mx-auto flex gap-4 flex-wrap justify-center items-center">
