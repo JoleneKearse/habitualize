@@ -22,7 +22,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const mParam = url.searchParams.get("m");
 
   if (yParam === null || mParam === null) {
-    // Redirect to current month if params are missing
     return redirect(
       `/dashboard/month?y=${now.getFullYear()}&m=${now.getMonth()}`
     );
@@ -32,9 +31,11 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const m = Number(url.searchParams.get("m")) ?? now.getMonth();
 
   const { weeks, first, last } = getMonthMatrix(y, m, 0);
+  // Calculate the first day of the next month for exclusive upper bound
+  const nextMonthFirst = new Date(y, m + 1, 1);
 
   const logs = await db.habitLog.findMany({
-    where: { date: { gte: first, lte: last } },
+    where: { date: { gte: first, lt: nextMonthFirst } },
     orderBy: { date: "desc" },
     include: { habit: true },
   });

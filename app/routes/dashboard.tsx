@@ -2,7 +2,7 @@ import { db } from "../utils/db.server";
 import { redirect, useLoaderData, Outlet } from "@remix-run/react";
 import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { getSession } from "~/services/session.server";
-import { useRef, useEffect } from "react";
+import { useRef } from "react";
 import DashboardActions from "~/components/DashboardActions";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
