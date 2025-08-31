@@ -2,7 +2,6 @@ import { getTextContrastColor } from "~/utils/utils";
 import { db } from "../utils/db.server";
 import { redirect, useLoaderData } from "@remix-run/react";
 import { useState, useRef, useEffect } from "react";
-import EditHabitLogs from "~/components/EditHabitLogs";
 import { ActionFunctionArgs } from "@remix-run/node";
 
 export const loader = async () => {

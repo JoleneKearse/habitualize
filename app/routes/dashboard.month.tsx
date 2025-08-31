@@ -7,25 +7,27 @@ import { db } from "~/utils/db.server";
 import { getTextContrastColor } from "~/utils/utils";
 import { getMonthMatrix } from "~/utils/calendar";
 import { toLocalDayKey, fromLocalDayKey } from "~/utils/dateKey";
+import { redirect } from "@remix-run/node";
 
 type HabitLogWithHabit = HabitLog & {
   habit: { name: string; color: string };
 };
 
-type LoaderData = {
-  y: number;
-  m: number;
-  weeks: string[][];
-  byDay: Record<string, HabitLogWithHabit[]>;
-};
-
-function toISO(d: Date) {
-  return d.toISOString().slice(0, 10);
-}
-
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   const now = new Date();
+
+  // go to current month
+  const yParam = url.searchParams.get("y");
+  const mParam = url.searchParams.get("m");
+
+  if (yParam === null || mParam === null) {
+    // Redirect to current month if params are missing
+    return redirect(
+      `/dashboard/month?y=${now.getFullYear()}&m=${now.getMonth()}`
+    );
+  }
+
   const y = Number(url.searchParams.get("y")) || now.getFullYear();
   const m = Number(url.searchParams.get("m")) ?? now.getMonth();
 
