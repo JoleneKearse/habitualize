@@ -39,7 +39,7 @@ export async function action({ request }: ActionFunctionArgs) {
     });
 
     session.set("userId", user.id);
-    return redirect("/day", {
+    return redirect("/dashboard/day", {
       headers: {
         "Set-Cookie": await commitSession(session),
       },
@@ -51,6 +51,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
     if (!user || !user.password) {
       session.flash("error", "Invalid login");
+      console.log("LOGIN: issue");
       return redirect("/dashboard", {
         headers: { "Set-Cookie": await commitSession(session) },
       });
