@@ -11,6 +11,8 @@
     "typecheck": "tsc"
   },
   "dependencies": {
+    "@libsql/client": "^0.15.14",
+    "@prisma/adapter-libsql": "^6.15.0",
     "@prisma/client": "6.15.0",
     "@remix-run/node": "^2.16.7",
     "@remix-run/react": "^2.16.7",
@@ -38,6 +40,7 @@
     "postcss": "^8.4.38",
     "prisma": "6.15.0",
     "tailwindcss": "^4.1.7",
+    "tsx": "^4.20.5",
     "typescript": "^5.1.6",
     "vite": "^6.0.0",
     "vite-tsconfig-paths": "^4.2.1"
