@@ -1,8 +1,13 @@
 import { createCookieSessionStorage } from "@remix-run/node";
 
-if (!process.env.SESSION_SECRET) {
-  throw new Error("SESSION_SECRET is not set");
+const required = ["SESSION_SECRET", "TURSO_DATABASE_URL"] as const;
+for (const k of required) {
+  if (!process.env[k]) {
+    throw new Error(`Missing required env var: ${k}`);
+  }
 }
+
+const COOKIE_DOMAIN = process.env.COOKIE_DOMAIN?.trim();
 
 export const sessionStorage = createCookieSessionStorage({
   cookie: {
@@ -13,7 +18,8 @@ export const sessionStorage = createCookieSessionStorage({
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     // Allow cookie to work across subdomains in production
-    domain: process.env.NODE_ENV === "production" ? process.env.COOKIE_DOMAIN : undefined,
+    ...(COOKIE_DOMAIN ? { domain: COOKIE_DOMAIN } : {}),
+    maxAge: 60 * 60 * 24 * 30,
   },
 });
 
