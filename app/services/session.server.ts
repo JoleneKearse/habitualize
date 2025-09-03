@@ -12,6 +12,8 @@ export const sessionStorage = createCookieSessionStorage({
     path: "/",
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
+    // Allow cookie to work across subdomains in production
+    domain: process.env.NODE_ENV === "production" ? process.env.COOKIE_DOMAIN : undefined,
   },
 });
 
