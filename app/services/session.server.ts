@@ -1,10 +1,14 @@
 import { createCookieSessionStorage } from "@remix-run/node";
 
-const required = ["SESSION_SECRET", "TURSO_DATABASE_URL"] as const;
-for (const k of required) {
-  if (!process.env[k]) {
-    throw new Error(`Missing required env var: ${k}`);
-  }
+// const required = ["SESSION_SECRET", "TURSO_DATABASE_URL"] as const;
+// for (const k of required) {
+//   if (!process.env[k]) {
+//     throw new Error(`Missing required env var: ${k}`);
+//   }
+// }
+
+if (!process.env.SESSION_SECRET) {
+  throw new Error("SESSION_SECRET missing");
 }
 
 // const COOKIE_DOMAIN = process.env.COOKIE_DOMAIN?.trim();
