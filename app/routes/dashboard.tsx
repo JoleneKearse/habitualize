@@ -9,9 +9,12 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const session = await getSession(request.headers.get("Cookie"));
   const userId = session.get("userId");
 
-  if (!userId) {
-    return redirect("/login");
-  }
+  console.log("Session userId:", session.get("userId"));
+
+
+  // if (!userId) {
+  //   return redirect("/login");
+  // }
 
   // Get monthly habits
   const today = new Date();
