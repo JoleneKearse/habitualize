@@ -7,9 +7,9 @@ import { createCookieSessionStorage } from "@remix-run/node";
 //   }
 // }
 
-if (!process.env.SESSION_SECRET) {
-  throw new Error("SESSION_SECRET missing");
-}
+// if (!process.env.SESSION_SECRET) {
+//   throw new Error("SESSION_SECRET missing");
+// }
 
 // const COOKIE_DOMAIN = process.env.COOKIE_DOMAIN?.trim();
 
