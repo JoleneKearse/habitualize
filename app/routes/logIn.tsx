@@ -52,7 +52,7 @@ export async function action({ request }: ActionFunctionArgs) {
     if (!user || !user.password) {
       session.flash("error", "Invalid login");
       console.log("LOGIN: issue");
-      return redirect("/dashboard", {
+      return redirect("/login", {
         headers: { "Set-Cookie": await commitSession(session) },
       });
     }

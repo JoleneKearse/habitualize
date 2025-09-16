@@ -7,7 +7,7 @@ for (const k of required) {
   }
 }
 
-const COOKIE_DOMAIN = process.env.COOKIE_DOMAIN?.trim();
+// const COOKIE_DOMAIN = process.env.COOKIE_DOMAIN?.trim();
 
 export const sessionStorage = createCookieSessionStorage({
   cookie: {
@@ -18,7 +18,7 @@ export const sessionStorage = createCookieSessionStorage({
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     // Allow cookie to work across subdomains in production
-    ...(COOKIE_DOMAIN ? { domain: COOKIE_DOMAIN } : {}),
+    // ...(COOKIE_DOMAIN ? { domain: COOKIE_DOMAIN } : {}),
     maxAge: 60 * 60 * 24 * 30,
   },
 });
